@@ -1,0 +1,30 @@
+  #############################################################################
+  # Development Image
+  #############################################################################
+  {{ data.target }}-{{ data.project_name }}:
+    build:
+      context: {{ data.build_context }}
+      dockerfile: {{ data.tmp_dir }}/{{ data.Dockerfile }}
+      target: builder
+    image: {{ data.target }}/{{ data.project_name }}:latest
+    stdin_open: true
+    tty: true
+    entrypoint: ros2-entrypoint.sh
+    command: /bin/bash
+    network_mode: "host"
+    environment:
+      - DISPLAY=${DISPLAY}
+    #devices:
+    #  - "/dev/video0:/dev/video0"
+    #ports:
+    #  - "8000:8000"
+    volumes:
+      # allow for gui apps inside the container (i.e. terminator)
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        read_only: true
+      # Use volumes to mount code from host system
+      # TODO - '../src:/home/camera/ros2_ws/src'
+      # Don't mount build directory into container
+      #- /home/ros2/ro2_ws/build

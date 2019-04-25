@@ -1,0 +1,10 @@
+{% extends "Dockerfile" %}
+{% block third_party %}
+USER root
+
+## Install nano
+RUN apt-get update && apt-get install -y \
+    nano \
+    && rm -rf /var/lib/apt/lists/*
+
+{% endblock %}
