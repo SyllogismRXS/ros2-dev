@@ -25,6 +25,10 @@
         target: /tmp/.X11-unix
         read_only: true
       # Use volumes to mount code from host system
-      # TODO - '../src:/home/camera/ros2_ws/src'
       # Don't mount build directory into container
-      #- /home/ros2/ro2_ws/build
+      - /home/{{ data.user_name }}/ros2_ws/build
+      - /home/{{ data.user_name }}/ros2_ws/install
+      - /home/{{ data.user_name }}/ros2_ws/log
+{% if data.ws_copy_dir is not none %}
+      - '{{ data.build_context }}/{{ data.ws_copy_dir }}:/home/{{ data.user_name }}/ros2_ws/src'
+{% endif %}      

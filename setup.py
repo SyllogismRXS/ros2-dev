@@ -15,7 +15,7 @@ install_requires = [
 ]
 
 
-setup(name='ros2-dev',
+setup(name='ros2dev',
     version=version,
     description="Setup a ROS 2.0 development environment in Docker",
     long_description=README + '\n\n' + NEWS,
@@ -33,6 +33,6 @@ setup(name='ros2-dev',
     install_requires=install_requires,
     entry_points={
         'console_scripts':
-            ['ros2-dev=ros2dev:main']
+            ['ros2dev=ros2dev:main']
     }
 )

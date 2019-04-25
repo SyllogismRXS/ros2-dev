@@ -1,4 +1,4 @@
-ros2-dev
+ros2dev
 ==========================
 
 This project builds a ROS 2.0 development environment in Docker. The user can
@@ -14,19 +14,19 @@ Install this python package from source: ::
 
 Generate the Dockerfiles to build the base ROS 2.0 environment: ::
 
-  $ ros2-dev generate
+  $ ros2dev generate
 
 Build the Docker image for the base ROS 2.0 environment: ::
 
-  $ ros2-dev build
+  $ ros2dev build
 
 Step into the base ROS 2.0 environment: ::
 
-  $ ros2-dev env
+  $ ros2dev env
 
 Run a single command in the ROS 2.0 environment: ::
 
-  $ ros2-dev run -c "ros2 topic list"
+  $ ros2dev run -c "ros2 topic list"
 
 Install Additional Dependencies
 -------------------------------
@@ -36,8 +36,8 @@ base Dockerfile by overriding the "third_party" block. An example is provided
 in this package at: ./src/ros2dev/templates/third_party.example. To generate a
 Dockerfile with an override, use the following command: ::
 
-  $ ros2-dev generate -o ./src/ros2dev/templates/third_party.example
+  $ ros2dev generate -o ./src/ros2dev/templates/third_party.example
 
 Then build the docker image: ::
 
-  $ ros2-dev build
+  $ ros2dev build
