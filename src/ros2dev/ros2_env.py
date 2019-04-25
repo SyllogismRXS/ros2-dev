@@ -4,15 +4,16 @@ import os
 import argparse
 import argcomplete
 import shutil
+import json
 from subprocess import check_call
 
 from jinja2 import Environment, FileSystemLoader
 
-def render(name, tmp_dir, replace, env):
+def render(name, tmp_dir, config, env):
     template = env.get_template(name)
 
     with open(tmp_dir + "/" + name, "w") as f:
-        f.write(template.render(data = replace))
+        f.write(template.render(data = config))
 
 def main():
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -32,49 +33,66 @@ def main():
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
-    replace = {}
-    replace['Dockerfile'] = 'Dockerfile'
+    config = {}
+    config['Dockerfile'] = 'Dockerfile'
     template_dirs = [script_dir + '/templates']
 
     if args.dockerfile_override is not None:
-        replace['Dockerfile'] = os.path.basename(args.dockerfile_override)
+        config['Dockerfile'] = os.path.basename(args.dockerfile_override)
         template_dirs.append(os.path.dirname(os.path.realpath(args.dockerfile_override)))
 
     file_loader = FileSystemLoader(template_dirs)
     env = Environment(loader=file_loader)
 
-    tmp_dir = args.output_dir
-    if not os.path.exists(tmp_dir):
+    if not os.path.exists(args.output_dir):
         try:
-            os.mkdir(tmp_dir)
+            os.mkdir(args.output_dir)
         except OSError:
-            print ("Creation of the directory %s failed" % tmp_dir)
+            print ("Creation of the directory %s failed" % args.output_dir)
 
-    replace['USER_ID'] = os.geteuid()
-    replace['tmp_dir'] = tmp_dir
-    replace['target'] = 'amd64'
-    replace['project_name'] = args.project_name
-    replace['build_context'] = args.build_context
-    replace['user_name'] = args.user_name
-    replace['ws_copy_dir'] = args.ws_copy_dir
+    json_file = args.output_dir + "/config.json"
 
     if args.positional == 'generate':
-        render(replace['Dockerfile'], tmp_dir, replace, env)
-        render('docker-compose.yml', tmp_dir, replace, env)
+        config['tmp_dir'] = args.output_dir
+        config['USER_ID'] = os.geteuid()
+        config['target'] = 'amd64'
+        config['project_name'] = args.project_name
+        config['build_context'] = args.build_context
+        config['user_name'] = args.user_name
+        config['ws_copy_dir'] = args.ws_copy_dir
+
+        # Write the generate variables to a JSON file
+        with open(json_file, "w") as f:
+            f.write(json.dumps(config))
+
+        # Render the templates
+        render(config['Dockerfile'], config['tmp_dir'], config, env)
+        render('docker-compose.yml', config['tmp_dir'], config, env)
         return 0
-    elif args.positional == 'build':
-        cmd = "docker-compose -p " + args.project_name + " build " + replace['target'] + "-" + args.project_name
+
+    # Read in the configuration variables that were written during the generate
+    # step.
+    try:
+        with open(json_file) as f:
+            config = json.load(f)
+    except:
+        print("Failed to read config.json file at %s" % json_file)
+        print("Did you skip the 'generate' step?")
+        return -1
+
+    if args.positional == 'build':
+        cmd = "docker-compose -p " + config['project_name'] + " build " + config['target'] + "-" + config['project_name']
     elif args.positional == 'env':
-        cmd = "docker-compose -p " + args.project_name + " up -d " + replace['target'] + "-" + args.project_name + \
-              " && docker attach " + args.project_name + "_" + replace['target'] + "-" + args.project_name + "_1"
+        cmd = "docker-compose -p " + config['project_name'] + " up -d " + config['target'] + "-" + config['project_name'] + \
+              " && docker attach " + config['project_name'] + "_" + config['target'] + "-" + config['project_name'] + "_1"
     elif args.positional == 'run':
         if args.command is not None:
-            cmd = "docker run -it " + replace['target'] + "/" + args.project_name + ":latest " + args.command
+            cmd = "docker run -it " + config['target'] + "/" + config['project_name'] + ":latest " + args.command
         else:
             print("When using the 'run' command, set the --command (-c) flag.")
             return -1
 
-    check_call(cmd, cwd=tmp_dir, shell=True)
+    check_call(cmd, cwd=config['tmp_dir'], shell=True)
 
     return 0
 
