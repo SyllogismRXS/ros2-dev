@@ -37,3 +37,7 @@ in this package at: ./src/ros2dev/templates/third_party.example. To generate a
 Dockerfile with an override, use the following command: ::
 
   $ ros2-dev generate -o ./src/ros2dev/templates/third_party.example
+
+Then build the docker image: ::
+
+  $ ros2-dev build
