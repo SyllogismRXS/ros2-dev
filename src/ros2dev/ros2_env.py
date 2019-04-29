@@ -2,7 +2,6 @@
 
 import os
 import argparse
-import argcomplete
 import shutil
 import json
 from subprocess import check_call
@@ -30,7 +29,6 @@ def main():
     add('-c', '--command', default=None, help='Command to run')
     add('-o', '--dockerfile_override', default=None, help='Dockerfile that overrides base Dockerfile.in')
 
-    argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
     config = {}

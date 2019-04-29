@@ -9,11 +9,9 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 version = '0.1'
 
 install_requires = [
-    # List your project dependencies here.
-    # For more details, see:
-    # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
+    'argparse',
+    'jinja2'
 ]
-
 
 setup(name='ros2dev',
     version=version,
@@ -25,10 +23,14 @@ setup(name='ros2dev',
     keywords='ROS robots',
     author='Kevin DeMarco',
     author_email='kevin.demarco@gmail.com',
-    url='www.kevindemarco.com',
+    url='https://www.kevindemarco.com',
     license='GPLv3',
     packages=find_packages('src'),
-    package_dir = {'': 'src'},include_package_data=True,
+    package_dir = {'': 'src'},
+    include_package_data=True,
+    package_data={
+        'ros2dev': ['templates/*'],
+    },
     zip_safe=False,
     install_requires=install_requires,
     entry_points={

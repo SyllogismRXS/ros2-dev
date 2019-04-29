@@ -8,10 +8,6 @@ then step into the ROS 2.0 environment to perform additional ROS 2.0 actions
 Basic Setup
 -----------
 
-Install this python package from source: ::
-
-  $ sudo pip3 install -e .
-
 Generate the Dockerfiles to build the base ROS 2.0 environment: ::
 
   $ ros2dev generate
