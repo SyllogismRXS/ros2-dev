@@ -27,17 +27,24 @@ def main():
     add('-u', '--user_name', default='ros2', help='User to create in Docker')
     add('-w', '--ws_copy_dir', default=None, help='Directory to copy into ROS 2.0 workspace')
     add('-c', '--command', default=None, help='Command to run')
-    add('-o', '--dockerfile_override', default=None, help='Dockerfile that overrides base Dockerfile.in')
+    add('-o', '--dockerfile_override', default=None, help='Dockerfile that overrides base Dockerfile')
+    add('-s', '--services_override', default=None, help='services that overrides base services')
 
     args = parser.parse_args()
 
     config = {}
     config['Dockerfile'] = 'Dockerfile'
+    config['docker-compose.yml'] = 'docker-compose.yml'
+    config['services'] = 'services'
     template_dirs = [script_dir + '/templates']
 
     if args.dockerfile_override is not None:
         config['Dockerfile'] = os.path.basename(args.dockerfile_override)
         template_dirs.append(os.path.dirname(os.path.realpath(args.dockerfile_override)))
+
+    if args.services_override is not None:
+        config['services'] = os.path.basename(args.services_override)
+        template_dirs.append(os.path.dirname(os.path.realpath(args.services_override)))
 
     file_loader = FileSystemLoader(template_dirs)
     env = Environment(loader=file_loader)
@@ -65,7 +72,7 @@ def main():
 
         # Render the templates
         render(config['Dockerfile'], config['tmp_dir'], config, env)
-        render('docker-compose.yml', config['tmp_dir'], config, env)
+        render(config['docker-compose.yml'], config['tmp_dir'], config, env)
         return 0
 
     # Read in the configuration variables that were written during the generate
@@ -79,9 +86,9 @@ def main():
         return -1
 
     if args.positional == 'build':
-        cmd = "docker-compose -p " + config['project_name'] + " build " + config['target'] + "-" + config['project_name']
+        cmd = "docker-compose -f " + config['docker-compose.yml'] + " -p " + config['project_name'] + " build " + config['target'] + "-" + config['project_name']
     elif args.positional == 'env':
-        cmd = "docker-compose -p " + config['project_name'] + " up -d " + config['target'] + "-" + config['project_name'] + \
+        cmd = "docker-compose -f " + config['docker-compose.yml'] + " -p " + config['project_name'] + " up -d " + config['target'] + "-" + config['project_name'] + \
               " && docker attach " + config['project_name'] + "_" + config['target'] + "-" + config['project_name'] + "_1"
     elif args.positional == 'run':
         if args.command is not None:

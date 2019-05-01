@@ -31,4 +31,7 @@
       - /home/{{ data.user_name }}/ros2_ws/log
 {% if data.ws_copy_dir is not none %}
       - '{{ data.build_context }}/{{ data.ws_copy_dir }}:/home/{{ data.user_name }}/ros2_ws/src'
-{% endif %}      
+{% endif %}
+{% block third_party_volumes %}
+      # No third_party_volumes
+{% endblock %}
