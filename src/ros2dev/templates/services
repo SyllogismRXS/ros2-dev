@@ -16,13 +16,8 @@
 {% block third_party_environment %}
       - DISPLAY=${DISPLAY}
 {% endblock %}
-    devices:
-{% block third_party_devices %}
-      # No third_party_devices
-{% endblock %}
-    ports:
-{% block third_party_ports %}
-      # No third_party_ports
+{% block third_party_items %}
+    # No third party items
 {% endblock %}
     volumes:
       # allow for gui apps inside the container (i.e. terminator)
