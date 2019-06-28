@@ -1,7 +1,7 @@
 WORKDIR ${ROS2_WS}
 ADD --chown={{ data.user_name }}:{{ data.user_name }} {{ data.ws_copy_dir }} ./src/
 
-RUN source /opt/ros/crystal/setup.bash && \
+RUN source /opt/ros/{{ data.ros_distro }}/setup.bash && \
     colcon \
     build \
     --cmake-args -DSECURITY=ON --no-warn-unused-cli \

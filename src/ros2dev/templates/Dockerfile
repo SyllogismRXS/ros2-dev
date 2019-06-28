@@ -27,18 +27,17 @@ RUN locale-gen en_US en_US.UTF-8 && \
     update-locale
 
 # Setup ros apt sources
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 421C365BD9FF1F717815A3895523BAEEB01FA116
-RUN echo "deb http://packages.ros.org/ros2/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros2-latest.list
+RUN curl http://repo.ros2.org/repos.key | apt-key add - \
+    && echo "deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list
 
 # Install ROS 2.0
-ENV CHOOSE_ROS_DISTRO crystal
 RUN apt-get update && apt-get install -q -y \
-    ros-$CHOOSE_ROS_DISTRO-ros-base \
+    ros-{{ data.ros_distro }}-ros-base \
     python3-colcon-common-extensions \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a simple entry script:
-ENV ROS_ROOT /opt/ros/crystal
+ENV ROS_ROOT /opt/ros/{{ data.ros_distro }}
 ENV ENTRYPOINT_SCRIPT /usr/local/bin/ros2-entrypoint.sh
 RUN echo '#!/bin/bash' > ${ENTRYPOINT_SCRIPT} && \
     echo "source ${ROS_ROOT}/setup.bash" >> ${ENTRYPOINT_SCRIPT} && \
@@ -57,7 +56,7 @@ RUN adduser --uid {{ data.USER_ID }} --disabled-password --gecos '' {{ data.user
 {% endblock %}
 
 USER {{ data.user_name }}
-RUN echo "source /opt/ros/crystal/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/{{ data.ros_distro }}/setup.bash" >> ~/.bashrc
 
 # Create ros workspace
 ENV ROS2_WS /home/{{ data.user_name }}/ros2_ws

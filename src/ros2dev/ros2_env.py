@@ -29,6 +29,7 @@ def main():
     add('-c', '--command', default=None, help='Command to run')
     add('-o', '--dockerfile_override', default=None, help='Dockerfile that overrides base Dockerfile')
     add('-s', '--services_override', default=None, help='services that overrides base services')
+    add('-r', '--ros_distro', default='dashing', help='The ROS distribution')
 
     args = parser.parse_args()
 
@@ -36,6 +37,7 @@ def main():
     config['Dockerfile'] = 'Dockerfile'
     config['docker-compose.yml'] = 'docker-compose.yml'
     config['services'] = 'services'
+    config['ros_distro'] = args.ros_distro
     template_dirs = [script_dir + '/templates']
 
     if args.dockerfile_override is not None:
