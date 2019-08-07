@@ -6,7 +6,7 @@ README = open(os.path.join(here, 'README.rst')).read()
 NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 
-version = '0.1.5'
+version = '0.1.6'
 
 install_requires = [
     'argparse',
@@ -25,16 +25,12 @@ setup(name='ros2dev',
     author_email='kevin.demarco@gmail.com',
     url='https://www.kevindemarco.com',
     license='GPLv3',
-    packages=find_packages('src'),
-    package_dir = {'': 'src'},
+    packages=find_packages(),
     include_package_data=True,
-    package_data={
-        'ros2dev': ['templates/*'],
-    },
     zip_safe=False,
     install_requires=install_requires,
     entry_points={
         'console_scripts':
-            ['ros2dev=ros2dev:main']
+            ['ros2dev=ros2dev.ros2dev:main']
     }
 )
